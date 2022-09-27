@@ -8,8 +8,8 @@
   imports = [ ./hardware-configuration.nix ];
 
   # Bootloader
-  # boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.loader.grub = {
     enable = true;
     # "nodev" means we generate a GRUB boot menu without intalling GRUB
@@ -17,10 +17,6 @@
     efiSupport = true;
     useOSProber = true;
   };
-
-  # boot.loader.systemd-boot.enable = true;
-  # boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
   # Network
   networking.hostName = "nixos";
@@ -38,7 +34,6 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.utf8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "pl_PL.utf8";
     LC_IDENTIFICATION = "pl_PL.utf8";
@@ -51,15 +46,23 @@
     LC_TIME = "pl_PL.utf8";
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
+  # Enable the X11 windowing system (display, bspwm)
+  services.xserver = {
+    enable = true;
+    displayManager.lightdm.enable = true;   
+    desktopManager = {
+      xterm.enable = false;
+      xfce = {
+        enable = true;
+        noDesktop = true;
+        enableXfwm = false;
+      };
+    };
+    windowManager.bspwm.enable = true;
+    videoDrivers = [ "nvidia" ];
+  };
   hardware.opengl.enable = true;
-  
-  # BSPWM
-  services.xserver.windowManager.bspwm.enable = true;
-  services.xserver.displayManager.defaultSession = "none+bspwm";
+  services.xserver.displayManager.defaultSession = "xfce+bspwm";
   
   # ZSH
   programs.zsh.enable = true;
@@ -80,33 +83,19 @@
   services.printing.enable = true;
 
   # Enable sound
- sound.enable = true;
+  sound.enable = true;
+  nixpkgs.config.pulseaudio = true;
   hardware.pulseaudio = {
     enable = true;
     package = pkgs.pulseaudioFull;
   };
 
-  # services.jack = {
-  #   jackd = {
-  #     enable = true;
-  #     extraOptions = [ "-dalsa" "-dhw:iD14" "-r44100" "-p128" ];
-  #   };
-  #   alsa.enable = true;
-  # };
-
-  # security.rtkit.enable = true;
-  # services.pipewire = {
-  #   enable = true;
-  #   alsa.enable = true;
-  #   alsa.support32Bit = true;
-  #   pulse.enable = true;
-  #   # If you want to use JACK applications, uncomment this
-  #   #jack.enable = true;
-
-  #   # use the example session manager (no others are packaged yet so this is enabled by default,
-  #   # no need to redefine it in your config for now)
-  #   #media-session.enable = true;
-  # };
+  services.jack = {
+    jackd = {
+      enable = true;
+    };
+    alsa.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -134,6 +123,7 @@
 
     # Tools
     neovim git zsh unzip wget htop tree cmatrix neofetch pavucontrol xclip
+    direnv cbonsai
 
     # Applications
     vscodium spotify brave alacritty
