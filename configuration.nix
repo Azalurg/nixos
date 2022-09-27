@@ -5,9 +5,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ /hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ];
 
   # Bootloader
+  # boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub = {
     enable = true;
@@ -19,7 +20,7 @@
 
   # boot.loader.systemd-boot.enable = true;
   # boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
   # Network
   networking.hostName = "nixos";
@@ -54,6 +55,7 @@
   services.xserver.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.opengl.enable = true;
   
   # BSPWM
   services.xserver.windowManager.bspwm.enable = true;
@@ -66,9 +68,9 @@
   services.xserver = {
     layout = "pl";
     xkbVariant = "";
-    mouse = {
-      accelProfile = "flat";
-    };
+    # mouse = {
+    #   accelProfile = "flat";
+    # };
   };
 
   # Configure console keymap
@@ -78,8 +80,19 @@
   services.printing.enable = true;
 
   # Enable sound
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
+ sound.enable = true;
+  hardware.pulseaudio = {
+    enable = true;
+    package = pkgs.pulseaudioFull;
+  };
+
+  # services.jack = {
+  #   jackd = {
+  #     enable = true;
+  #     extraOptions = [ "-dalsa" "-dhw:iD14" "-r44100" "-p128" ];
+  #   };
+  #   alsa.enable = true;
+  # };
 
   # security.rtkit.enable = true;
   # services.pipewire = {
@@ -102,7 +115,7 @@
   users.users.azalurg = {
     isNormalUser = true;
     description = "azalurg";
-    extraGroups = [ "networkmanager" "wheel" "audio" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" ]; # "wheel" "input" "audio" "jackaudio" "video" "lp" "networkmanager" "kvm" "libvirtd"
     shell = pkgs.zsh; 
  };
 
@@ -125,12 +138,12 @@
     # Applications
     vscodium spotify brave alacritty
     python3
-    xfce.thunar xfce.thunar-archive-plugin  xfce.thunar-volman
+    xfce.thunar
   ];
 
-  # services.xserver.desktopManager.xfce.thunarPlugin = with pkgs.xfce; [
-  #   thunar-archive-plugin
-  #   thunar-volman
+  # services.xserver.desktopManager.xfce.thunarPlugin = [
+  #   pkgs.xfce.thunar-archive-plugin
+  #   pkgs.xfce.thunar-volman
   # ];
 
   # Environment variables
