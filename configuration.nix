@@ -49,32 +49,27 @@
   # Enable the X11 windowing system (display, bspwm)
   services.xserver = {
     enable = true;
-    displayManager.lightdm.enable = true;   
-    desktopManager = {
-      xterm.enable = false;
-      xfce = {
-        enable = true;
-        noDesktop = true;
-        enableXfwm = false;
-      };
+    layout = "pl";
+    xkbVariant = "";
+    displayManager.lightdm = {
+      enable = true;
+      autoLogin.enable = true;
+      autoLogin.user = "azalurg";
+    };
+    desktopManager.xfce = {
+      enable = true;
+      enableXfwm = false;
     };
     windowManager.bspwm.enable = true;
     videoDrivers = [ "nvidia" ];
+    desktopManager.xterm.enable = false;
+    displayManager.defaultSession = "none+bspwm";
   };
+  services.xrdp.defaultWindowManager = "bspwm";
   hardware.opengl.enable = true;
-  services.xserver.displayManager.defaultSession = "xfce+bspwm";
-  
+
   # ZSH
   programs.zsh.enable = true;
-
-  # Configure keymap in X11
-  services.xserver = {
-    layout = "pl";
-    xkbVariant = "";
-    # mouse = {
-    #   accelProfile = "flat";
-    # };
-  };
 
   # Configure console keymap
   console.keyMap = "pl2";
@@ -91,10 +86,9 @@
   };
 
   services.jack = {
-    jackd = {
-      enable = true;
-    };
-    alsa.enable = true;
+    jackd.enable = true;
+    alsa.enable = false;
+    loopback.enable = true;
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -104,13 +98,9 @@
   users.users.azalurg = {
     isNormalUser = true;
     description = "azalurg";
-    extraGroups = [ "networkmanager" "wheel" "audio" ]; # "wheel" "input" "audio" "jackaudio" "video" "lp" "networkmanager" "kvm" "libvirtd"
-    shell = pkgs.zsh; 
+    extraGroups = [ "networkmanager" "wheel" "audio" "jackaudio" ]; # "wheel" "input" "audio" "jackaudio" "video" "lp" "networkmanager" "kvm" "libvirtd"
+    shell = pkgs.zsh;
  };
-
-  # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin.enable = true;
-  services.xserver.displayManager.autoLogin.user = "azalurg";
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -118,15 +108,16 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     # Window Manager
-    bspwm sxhkd polybar xorg.xdpyinfo xautomation 
+    bspwm sxhkd polybar xorg.xdpyinfo xautomation
     rofi feh
 
     # Tools
     neovim git zsh unzip wget htop tree cmatrix neofetch pavucontrol xclip
-    direnv cbonsai
+    direnv cbonsai oh-my-zsh
 
     # Applications
-    vscodium spotify brave alacritty
+    vscodium spotify brave alacritty blender
+    jetbrains.pycharm-community 
     python3
     xfce.thunar
   ];
