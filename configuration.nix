@@ -8,31 +8,35 @@
   imports = [ ./hardware-configuration.nix ];
 
   # Bootloader
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  boot.loader.grub = {
-    enable = true;
-    # "nodev" means we generate a GRUB boot menu without intalling GRUB
-    devices = [ "nodev" ];
-    efiSupport = true;
-    useOSProber = true;
+  boot.loader = {
+    efi ={
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/boot/efi";
+    };
+
+    grub = {
+      enable = true;
+      devices = [ "nodev" ];  # "nodev" means we generate a GRUB boot menu without intalling GRUB
+      efiSupport = true;
+      useOSProber = true;
+      configurationLimit = 3;
+      theme = pkgs.emacs28Packages.gruber-darker-theme;
+    };
+
+    timeout = 5;
   };
 
   # Network
   networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
+  # Internationalisation
   time.timeZone = "Europe/Warsaw";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.utf8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "pl_PL.utf8";
@@ -46,7 +50,7 @@
     LC_TIME = "pl_PL.utf8";
   };
 
-  # Enable the X11 windowing system (display, bspwm)
+  # Display / Desktop / Windows
   services.xserver = {
     enable = true;
     layout = "pl";
@@ -59,6 +63,8 @@
     desktopManager.xfce = {
       enable = true;
       enableXfwm = false;
+      noDesktop = true;
+      thunarPlugins = [ pkgs.xfce.thunar-volman pkgs.xfce.thunar-archive-plugin ];
     };
     windowManager.bspwm.enable = true;
     videoDrivers = [ "nvidia" ];
@@ -68,16 +74,7 @@
   services.xrdp.defaultWindowManager = "bspwm";
   hardware.opengl.enable = true;
 
-  # ZSH
-  programs.zsh.enable = true;
-
-  # Configure console keymap
-  console.keyMap = "pl2";
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound
+  # Audio
   sound.enable = true;
   nixpkgs.config.pulseaudio = true;
   hardware.pulseaudio = {
@@ -90,48 +87,56 @@
     alsa.enable = false;
     loopback.enable = true;
   };
-
+  
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
+
+  # ZSH
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+  };
+
+  # Configure console keymap
+  console.keyMap = "pl2";
+
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
+
+  
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.azalurg = {
     isNormalUser = true;
     description = "azalurg";
-    extraGroups = [ "networkmanager" "wheel" "audio" "jackaudio" ]; # "wheel" "input" "audio" "jackaudio" "video" "lp" "networkmanager" "kvm" "libvirtd"
+    extraGroups = [ "networkmanager" "wheel" "audio" "jackaudio" "video" "lp" ]; # "kvm" "libvirtd"
     shell = pkgs.zsh;
  };
 
-  # Allow unfree packages
+  # Packages
   nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile.
+  system.autoUpgrade.enable = true;
+  
   environment.systemPackages = with pkgs; [
     # Window Manager
     bspwm sxhkd polybar xorg.xdpyinfo xautomation
     rofi feh
 
     # Tools
-    neovim git zsh unzip wget htop tree cmatrix neofetch pavucontrol xclip
-    direnv cbonsai oh-my-zsh
+    neovim git unzip wget htop tree cmatrix neofetch pavucontrol xclip
+    direnv cbonsai
 
     # Applications
     vscodium spotify brave alacritty blender
     jetbrains.pycharm-community 
     python3
-    xfce.thunar
   ];
-
-  # services.xserver.desktopManager.xfce.thunarPlugin = [
-  #   pkgs.xfce.thunar-archive-plugin
-  #   pkgs.xfce.thunar-volman
-  # ];
 
   # Environment variables
   environment.variables = {
     EDITOR = "nvim";
   };
-
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
