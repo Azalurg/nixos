@@ -20,7 +20,7 @@
       efiSupport = true;
       useOSProber = true;
       configurationLimit = 3;
-      theme = pkgs.emacs28Packages.gruber-darker-theme;
+      # theme = pkgs.emacs28Packages.gruber-darker-theme;
     };
 
     timeout = 5;
@@ -55,10 +55,12 @@
     enable = true;
     layout = "pl";
     xkbVariant = "";
-    displayManager.lightdm = {
-      enable = true;
+    displayManager ={
       autoLogin.enable = true;
       autoLogin.user = "azalurg";
+      lightdm = {
+        enable = true;
+      };
     };
     desktopManager.xfce = {
       enable = true;
@@ -72,6 +74,7 @@
     displayManager.defaultSession = "none+bspwm";
   };
   services.xrdp.defaultWindowManager = "bspwm";
+  services.xserver.displayManager.sddm.autoNumlock = true;
   hardware.opengl.enable = true;
 
   # Audio
@@ -110,7 +113,7 @@
   users.users.azalurg = {
     isNormalUser = true;
     description = "azalurg";
-    extraGroups = [ "networkmanager" "wheel" "audio" "jackaudio" "video" "lp" ]; # "kvm" "libvirtd"
+    extraGroups = [ "networkmanager" "wheel" "audio" "jackaudio" "video" "lp" "docker" ]; # "kvm" "libvirtd"
     shell = pkgs.zsh;
  };
 
@@ -120,18 +123,29 @@
   
   environment.systemPackages = with pkgs; [
     # Window Manager
-    bspwm sxhkd polybar xorg.xdpyinfo xautomation
-    rofi feh
+    bspwm picom sxhkd polybar xorg.xdpyinfo xautomation rofi feh
 
     # Tools
-    neovim git unzip wget htop tree cmatrix neofetch pavucontrol xclip
-    direnv cbonsai
-
+    neovim git unzip wget htop tree cmatrix neofetch pavucontrol xclip direnv cbonsai gh 
+    
     # Applications
-    vscodium spotify brave alacritty blender
-    jetbrains.pycharm-community 
-    python3
-  ];
+    vscodium spotify steam brave alacritty postman blender discord gimp libreoffice
+
+    # Python
+    jetbrains.pycharm-community python3
+
+    # Java
+    jdk11 jetbrains.idea-community
+
+    # JacaScript
+    nodejs
+
+    # Docker & k8s
+    docker kubectl minikube
+ ];
+
+  programs.steam.enable = true;
+  virtualisation.docker.enable = true;
 
   # Environment variables
   environment.variables = {
