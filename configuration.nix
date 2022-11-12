@@ -20,7 +20,7 @@
       efiSupport = true;
       useOSProber = true;
       configurationLimit = 3;
-      # theme = pkgs.emacs28Packages.gruber-darker-theme;
+      theme = pkgs.nixos-grub2-theme;
     };
 
     timeout = 5;
@@ -74,7 +74,7 @@
     displayManager.defaultSession = "none+bspwm";
   };
   services.xrdp.defaultWindowManager = "bspwm";
-  services.xserver.displayManager.sddm.autoNumlock = true;
+  # services.xserver.displayManager.sddm.autoNumlock = true;
   hardware.opengl.enable = true;
 
   # Audio
@@ -119,14 +119,26 @@
 
   # Packages
   nixpkgs.config.allowUnfree = true;
-  system.autoUpgrade.enable = true;
+  system.autoUpgrade = {
+    enable = true;
+    channel = "https://nixos.org/channels/nixos-22.05";
+    dates = "weekly";
+  };
+  nix = {
+    settings.auto-optimise-store = true;
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 14d";
+      };
+  };
   
   environment.systemPackages = with pkgs; [
     # Window Manager
     bspwm picom sxhkd polybar xorg.xdpyinfo xautomation rofi feh
 
     # Tools
-    neovim git unzip wget htop tree cmatrix neofetch pavucontrol xclip direnv cbonsai gh 
+    neovim git httpie unzip wget htop tree cmatrix neofetch pavucontrol xclip direnv cbonsai gh nixos-grub2-theme
     
     # Applications
     vscodium spotify steam brave alacritty postman blender discord gimp libreoffice
