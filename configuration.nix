@@ -138,13 +138,13 @@
     bspwm picom sxhkd polybar xorg.xdpyinfo xautomation rofi feh
 
     # Tools
-    neovim git httpie unzip wget htop tree cmatrix neofetch pavucontrol xclip direnv cbonsai gh nixos-grub2-theme
+    neovim git httpie unzip wget htop tree cmatrix neofetch pavucontrol xclip direnv cbonsai gh nixos-grub2-theme lm_sensors
     
     # Applications
-    vscodium spotify steam brave alacritty postman blender discord gimp libreoffice
+    vscodium spotify steam brave alacritty postman blender discord gimp libreoffice dbeaver
 
     # Python
-    jetbrains.pycharm-community python3Full pipenv
+    jetbrains.pycharm-community python3Full pipenv python39Packages.pip
 
     # Java
     jdk11 jetbrains.idea-community
