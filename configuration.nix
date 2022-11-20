@@ -55,11 +55,13 @@
     enable = true;
     layout = "pl";
     xkbVariant = "";
-    displayManager ={
+    displayManager = {
       autoLogin.enable = true;
       autoLogin.user = "azalurg";
-      lightdm = {
+      defaultSession = "none+bspwm";
+      sddm = {
         enable = true;
+        autoNumlock = true;
       };
     };
     desktopManager.xfce = {
@@ -71,10 +73,8 @@
     windowManager.bspwm.enable = true;
     videoDrivers = [ "nvidia" ];
     desktopManager.xterm.enable = false;
-    displayManager.defaultSession = "none+bspwm";
   };
   services.xrdp.defaultWindowManager = "bspwm";
-  # services.xserver.displayManager.sddm.autoNumlock = true;
   hardware.opengl.enable = true;
 
   # Audio
@@ -144,7 +144,7 @@
     vscodium spotify steam brave alacritty postman blender discord gimp libreoffice
 
     # Python
-    jetbrains.pycharm-community python3
+    jetbrains.pycharm-community python3Full pipenv
 
     # Java
     jdk11 jetbrains.idea-community
